@@ -13,7 +13,8 @@ LIMIT 1;
 
 -- name: ListTodos :many
 SELECT * FROM todos
-ORDER BY title;
+ORDER BY title
+LIMIT $1 OFFSET $2;
 
 -- name: DeleteTodo :exec
 DELETE FROM todos

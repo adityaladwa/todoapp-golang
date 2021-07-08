@@ -69,10 +69,16 @@ func (q *Queries) GetTodo(ctx context.Context, id uuid.UUID) (Todo, error) {
 const listTodos = `-- name: ListTodos :many
 SELECT id, title, description, created_at, updated_at FROM todos
 ORDER BY title
+LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListTodos(ctx context.Context) ([]Todo, error) {
-	rows, err := q.db.QueryContext(ctx, listTodos)
+type ListTodosParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListTodos(ctx context.Context, arg ListTodosParams) ([]Todo, error) {
+	rows, err := q.db.QueryContext(ctx, listTodos, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

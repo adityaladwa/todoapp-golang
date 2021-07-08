@@ -60,3 +60,23 @@ func TestDeleteAccount(t *testing.T) {
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, todo2)
 }
+
+func TestListTodo(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		CreateTodo(t)
+	}
+
+	arg := ListTodosParams{
+		Limit:  5,
+		Offset: 5,
+	}
+
+	todos, err := testQueries.ListTodos(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, todos)
+	require.Len(t, todos, 5)
+
+	for _, todo := range todos {
+		require.NotEmpty(t, todo)
+	}
+}
