@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
+
 	db "github.com/adityaladwa/todoapp/db/sqlc"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 type todoResponse struct {
@@ -28,5 +29,26 @@ func (s *Server) GetTodos(c *fiber.Ctx) error {
 		c.SendString("error")
 		return c.SendStatus(http.StatusInternalServerError)
 	}
-	return c.JSON(todos)
+
+	var todoResponse []todoResponse
+	for i := 0; i < len(todos); i++ {
+		todoResponse = append(todoResponse, mapTodoToResponse(todos[i]))
+	}
+	return c.JSON(todoResponse)
+}
+
+func mapTodoToResponse(t db.Todo) todoResponse {
+	var description string
+	if t.Description.Valid {
+		description = t.Description.String
+	} else {
+		description = ""
+	}
+	return todoResponse{
+		ID:          t.ID,
+		Title:       t.Title,
+		Description: description,
+		CreatedAt:   t.CreatedAt,
+		UpdatedAt:   t.UpdatedAt,
+	}
 }
