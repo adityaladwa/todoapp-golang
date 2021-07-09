@@ -1,8 +1,6 @@
 package api
 
 import (
-	"database/sql"
-	"encoding/json"
 	"net/http"
 	"time"
 
