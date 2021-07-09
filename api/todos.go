@@ -1,6 +1,8 @@
 package api
 
 import (
+	"database/sql"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -17,22 +19,6 @@ type todoResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func mapFromTodos(t []db.Todo) []todoResponse {
-	r := make([]todoResponse, len(t))
-	for i := 0; i < len(t); i++ {
-		r[i].ID = t[i].ID
-		r[i].Title = t[i].Title
-		if t[i].Description.Valid {
-			r[i].Description = t[i].Description.String
-		} else {
-			r[i].Description = ""
-		}
-		r[i].CreatedAt = t[i].CreatedAt
-		r[i].UpdatedAt = t[i].UpdatedAt
-	}
-	return r
-}
-
 func (s *Server) GetTodos(c *fiber.Ctx) error {
 	args := db.ListTodosParams{
 		Limit:  10,
@@ -44,5 +30,5 @@ func (s *Server) GetTodos(c *fiber.Ctx) error {
 		c.SendString("error")
 		return c.SendStatus(http.StatusInternalServerError)
 	}
-	return c.JSON(mapFromTodos(todos))
+	return c.JSON(todos)
 }

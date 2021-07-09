@@ -3,6 +3,7 @@ package api
 import (
 	db "github.com/adityaladwa/todoapp/db/sqlc"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 // A struct that represents a server instance
@@ -15,7 +16,10 @@ func NewServer(store *db.Store) *Server {
 	server := &Server{store: store}
 	app := fiber.New()
 
-	app.Get("v1/api/todos", server.GetTodos)
+	app.Use(logger.New())
+	
+	v1 := app.Group("v1/api")
+	v1.Get("/todos", server.GetTodos)
 
 	server.router = app
 	return server
