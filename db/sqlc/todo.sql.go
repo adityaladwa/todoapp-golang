@@ -83,7 +83,7 @@ func (q *Queries) ListTodos(ctx context.Context, arg ListTodosParams) ([]Todo, e
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Todo
+	items := []Todo{}
 	for rows.Next() {
 		var i Todo
 		if err := rows.Scan(
