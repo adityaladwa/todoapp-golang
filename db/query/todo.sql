@@ -1,21 +1,21 @@
 -- name: CreateTodo :one
-INSERT INTO todos (
+insert into todos (
   title, 
   description
-) VALUES (
+) values (
   $1, $2
-) RETURNING *;
+) returning *;
 
 -- name: GetTodo :one
-SELECT * FROM todos 
-WHERE id=$1 
-LIMIT 1;
+select * from todos 
+where id=$1 
+limit 1;
 
 -- name: ListTodos :many
-SELECT * FROM todos
-ORDER BY title
-LIMIT $1 OFFSET $2;
+select * from todos
+order by title
+limit $1 OFFSET $2;
 
 -- name: DeleteTodo :exec
-DELETE FROM todos
-WHERE id=$1;
+delete from todos
+where id=$1;

@@ -1,11 +1,11 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+create EXTENSION if not exists "uuid-ossp";
 
-CREATE TABLE "todos" (
-    "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    "title" VARCHAR(255) NOT NULL,
-    "description" TEXT DEFAULT NULL,
-    "created_at" timestamptz NOT NULL DEFAULT (now()),
-    "updated_at" timestamptz NOT NULL DEFAULT (now())
+create table "todos" (
+    "id" uuid primary key default uuid_generate_v4(),
+    "title" varchar(255) not null,
+    "description" text default null,
+    "created_at" timestamptz not null default (now()),
+    "updated_at" timestamptz not null default (now())
 );
 
-CREATE INDEX ON "todos" ("title");
+create index on "todos" ("title");
