@@ -45,6 +45,7 @@ func NewServer(store *db.Store) *Server {
 
 	apiV1 := router.Group("api/v1")
 	apiV1.GET("/todos", server.ListTodos)
+	apiV1.POST("/todos", server.CreateTodo)
 
 	server.router = router
 	return server

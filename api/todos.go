@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"time"
 
@@ -65,3 +66,38 @@ func mapToResponse(t db.Todo) todoResponse {
 		UpdatedAt:   t.UpdatedAt,
 	}
 }
+
+type createTodoRequest struct {
+	Title       string `json:"title" binding:"required,min=3"`
+	Description string `json:"description,omitempty"`
+}
+
+func (s *Server) CreateTodo(c *gin.Context) {
+	var req createTodoRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, errorResponse(err.Error()))
+		return
+	}
+	var valid bool
+	if req.Description == "" {
+		valid = false
+	} else {
+		valid = true
+	}
+	args := db.CreateTodoParams{
+		Title: req.Title,
+		Description: sql.NullString{
+			String: req.Description,
+			Valid:  valid,
+		},
+	}
+
+	todo, err := s.store.CreateTodo(c.Request.Context(), args)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, todo)
+}
+
