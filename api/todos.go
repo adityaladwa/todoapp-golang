@@ -2,13 +2,12 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
 	db "github.com/adityaladwa/todoapp/db/sqlc"
-	"github.com/gofiber/fiber/v2"
 )
 
 type todoResponse struct {
@@ -19,30 +18,35 @@ type todoResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func (s *Server) GetTodos(c *fiber.Ctx) error {
-	pageSize, err := strconv.ParseInt(c.Query("page_size"), 10, 32)
-	if err != nil {
-		c.SendStatus(http.StatusUnprocessableEntity)
-	}
-	pageNo, err := strconv.ParseInt(c.Query("page_no"), 10, 32)
-	if err != nil {
-		c.SendStatus(http.StatusUnprocessableEntity)
+type getTodoRequestUri struct {
+	PageID   int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+}
+
+func (s *Server) GetTodos(c *gin.Context) {
+	var req getTodoRequestUri
+	if err := c.ShouldBindQuery(&req); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, errorResponse(err.Error()))
+		return
 	}
 	args := db.ListTodosParams{
-		Limit:  int32(pageSize),
-		Offset: int32(pageNo),
+		Limit:  req.PageSize,
+		Offset: (req.PageID - 1) * req.PageSize,
 	}
-	todos, err := s.store.ListTodos(c.UserContext(), args)
+	todos, err := s.store.ListTodos(c.Request.Context(), args)
 	if err != nil {
-		c.SendString("error")
-		return c.SendStatus(http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, errorResponse(err.Error()))
 	}
-
-	var todoResponse []todoResponse
+	todoResponse := []todoResponse{}
 	for i := 0; i < len(todos); i++ {
 		todoResponse = append(todoResponse, mapToResponse(todos[i]))
 	}
-	return c.JSON(todoResponse)
+	apiResponse := apiResponse{
+		Data:    todoResponse,
+		Error:   nil,
+		Success: true,
+	}
+	c.JSON(http.StatusOK, apiResponse)
 }
 
 func mapToResponse(t db.Todo) todoResponse {

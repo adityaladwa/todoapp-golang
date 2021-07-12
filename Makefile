@@ -4,4 +4,7 @@ migrateup:
 test:
 	go test -v -cover ./...
 
-.PHONEY :migrateup test
+run:
+	go run main.go
+
+.PHONEY :migrateup test run
