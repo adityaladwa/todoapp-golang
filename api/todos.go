@@ -3,21 +3,11 @@ package api
 import (
 	"database/sql"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 
 	db "github.com/adityaladwa/todoapp/db/sqlc"
 )
-
-type todoResponse struct {
-	ID          uuid.UUID `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-}
 
 type listTodoRequestQuery struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
@@ -51,22 +41,6 @@ func (s *Server) ListTodos(c *gin.Context) {
 	c.JSON(http.StatusOK, apiResponse)
 }
 
-func mapToResponse(t db.Todo) todoResponse {
-	var description string
-	if t.Description.Valid {
-		description = t.Description.String
-	} else {
-		description = ""
-	}
-	return todoResponse{
-		ID:          t.ID,
-		Title:       t.Title,
-		Description: description,
-		CreatedAt:   t.CreatedAt,
-		UpdatedAt:   t.UpdatedAt,
-	}
-}
-
 type createTodoRequest struct {
 	Title       string `json:"title" binding:"required,min=3"`
 	Description string `json:"description,omitempty"`
@@ -93,11 +67,10 @@ func (s *Server) CreateTodo(c *gin.Context) {
 	}
 
 	todo, err := s.store.CreateTodo(c.Request.Context(), args)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err.Error()))
 		return
 	}
-	c.JSON(http.StatusOK, todo)
-}
 
+	c.JSON(http.StatusOK, mapToResponse(todo))
+}
