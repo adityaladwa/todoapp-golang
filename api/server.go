@@ -44,7 +44,7 @@ func NewServer(store *db.Store) *Server {
 	router := gin.Default()
 
 	apiV1 := router.Group("api/v1")
-	apiV1.GET("/todos", server.GetTodos)
+	apiV1.GET("/todos", server.ListTodos)
 
 	server.router = router
 	return server

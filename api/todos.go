@@ -18,13 +18,13 @@ type todoResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type getTodoRequestUri struct {
+type listTodoRequestQuery struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
-func (s *Server) GetTodos(c *gin.Context) {
-	var req getTodoRequestUri
+func (s *Server) ListTodos(c *gin.Context) {
+	var req listTodoRequestQuery
 	if err := c.ShouldBindQuery(&req); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, errorResponse(err.Error()))
 		return
@@ -36,6 +36,7 @@ func (s *Server) GetTodos(c *gin.Context) {
 	todos, err := s.store.ListTodos(c.Request.Context(), args)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err.Error()))
+		return
 	}
 	todoResponse := []todoResponse{}
 	for i := 0; i < len(todos); i++ {
