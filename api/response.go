@@ -15,7 +15,7 @@ type todoResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func mapToResponse(t db.Todo) todoResponse {
+func mapTodoResponse(t db.Todo) todoResponse {
 	var description string
 	if t.Description.Valid {
 		description = t.Description.String
