@@ -10,9 +10,9 @@ import (
 )
 
 type Todo struct {
-	ID          uuid.UUID      `json:"id"`
-	Title       string         `json:"title"`
-	Description sql.NullString `json:"description"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID          uuid.UUID
+	Title       string
+	Description sql.NullString
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }

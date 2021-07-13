@@ -11,17 +11,17 @@ import (
 )
 
 const createTodo = `-- name: CreateTodo :one
-INSERT INTO todos (
+insert into todos (
   title, 
   description
-) VALUES (
+) values (
   $1, $2
-) RETURNING id, title, description, created_at, updated_at
+) returning id, title, description, created_at, updated_at
 `
 
 type CreateTodoParams struct {
-	Title       string         `json:"title"`
-	Description sql.NullString `json:"description"`
+	Title       string
+	Description sql.NullString
 }
 
 func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error) {
@@ -38,8 +38,8 @@ func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, e
 }
 
 const deleteTodo = `-- name: DeleteTodo :exec
-DELETE FROM todos
-WHERE id=$1
+delete from todos
+where id=$1
 `
 
 func (q *Queries) DeleteTodo(ctx context.Context, id uuid.UUID) error {
@@ -48,9 +48,9 @@ func (q *Queries) DeleteTodo(ctx context.Context, id uuid.UUID) error {
 }
 
 const getTodo = `-- name: GetTodo :one
-SELECT id, title, description, created_at, updated_at FROM todos 
-WHERE id=$1 
-LIMIT 1
+select id, title, description, created_at, updated_at from todos 
+where id=$1 
+limit 1
 `
 
 func (q *Queries) GetTodo(ctx context.Context, id uuid.UUID) (Todo, error) {
@@ -67,14 +67,14 @@ func (q *Queries) GetTodo(ctx context.Context, id uuid.UUID) (Todo, error) {
 }
 
 const listTodos = `-- name: ListTodos :many
-SELECT id, title, description, created_at, updated_at FROM todos
-ORDER BY title
-LIMIT $1 OFFSET $2
+select id, title, description, created_at, updated_at from todos
+order by title
+limit $1 OFFSET $2
 `
 
 type ListTodosParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListTodos(ctx context.Context, arg ListTodosParams) ([]Todo, error) {
