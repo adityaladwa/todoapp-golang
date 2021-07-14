@@ -8,21 +8,24 @@ import (
 	"github.com/google/uuid"
 )
 
-type Store struct {
+type Store interface {
+	Querier
+}
+type SQLStore struct {
 	*Queries
 	db *sql.DB
 }
 
 // NewStore creates a new Store
-func NewStore(db *sql.DB) *Store {
-	return &Store{
+func NewStore(db *sql.DB) Store {
+	return &SQLStore{
 		db:      db,
 		Queries: New(db),
 	}
 }
 
 // execTx executes a function within a database transaction
-func (s *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
+func (s *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -39,7 +42,7 @@ func (s *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 	return tx.Commit()
 }
 
-func (s *Store) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error) {
+func (s *SQLStore) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error) {
 	var todo Todo
 	err := s.execTx(ctx, func(q *Queries) error {
 		var err error
@@ -53,7 +56,7 @@ func (s *Store) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, err
 	return todo, err
 }
 
-func (s *Store) GetTodo(ctx context.Context, id uuid.UUID) (Todo, error) {
+func (s *SQLStore) GetTodo(ctx context.Context, id uuid.UUID) (Todo, error) {
 	var todo Todo
 	err := s.execTx(ctx, func(q *Queries) error {
 		var err error

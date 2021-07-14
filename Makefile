@@ -7,4 +7,7 @@ test:
 run:
 	go run main.go
 
-.PHONEY :migrateup test run
+mock:
+	mockgen -destination db/mock/store.go -package mockdb github.com/adityaladwa/todoapp/db/sqlc Store
+
+.PHONEY :migrateup test run mock
