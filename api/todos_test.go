@@ -27,16 +27,16 @@ func TestGetTodoApi(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	store := mockdb.NewMockStore(ctrl)
+	mockQuerier := mockdb.NewMockQuerier(ctrl)
 
 	// build stubs
-	store.EXPECT().
+	mockQuerier.EXPECT().
 		GetTodo(gomock.Any(), gomock.Eq(todo.ID)).
 		Times(1).
 		Return(todo, nil)
 
 	// start a test http server
-	server := NewServer(store)
+	server := NewServer(mockQuerier)
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/v1/todos/%s", todo.ID)
