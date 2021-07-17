@@ -7,12 +7,12 @@ import (
 
 // A struct that represents a server instance
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	querier db.Querier
+	router  *gin.Engine
 }
 
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(querier db.Querier) *Server {
+	server := &Server{querier: querier}
 	router := gin.Default()
 
 	apiV1 := router.Group("api/v1")

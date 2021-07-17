@@ -54,7 +54,6 @@ func randomTodo() db.Todo {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(now.String())
 	return db.Todo{
 		ID:    uuid.New(),
 		Title: util.RandomTodoTitle(),
@@ -77,7 +76,5 @@ func requireBodyMatchAccount(t *testing.T, body *bytes.Buffer, todo db.Todo) {
 	err = json.Unmarshal(data, &gotTodo)
 
 	require.NoError(t, err)
-	log.Println("Expected", expected)
-	log.Println("Got", gotTodo)
 	require.Equal(t, expected, gotTodo)
 }

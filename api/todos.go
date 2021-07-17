@@ -25,7 +25,7 @@ func (s *Server) ListTodos(c *gin.Context) {
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
-	todos, err := s.store.ListTodos(c.Request.Context(), args)
+	todos, err := s.querier.ListTodos(c.Request.Context(), args)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err.Error()))
 		return
@@ -67,7 +67,7 @@ func (s *Server) CreateTodo(c *gin.Context) {
 		},
 	}
 
-	todo, err := s.store.CreateTodo(c.Request.Context(), args)
+	todo, err := s.querier.CreateTodo(c.Request.Context(), args)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err.Error()))
 		return
@@ -91,7 +91,7 @@ func (s *Server) GetTodo(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, errorResponse(err.Error()))
 		return
 	}
-	todo, err := s.store.GetTodo(c.Request.Context(), id)
+	todo, err := s.querier.GetTodo(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
