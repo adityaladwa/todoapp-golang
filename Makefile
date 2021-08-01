@@ -8,7 +8,7 @@ dropdb:
 	docker exec -it postgres12 dropdb todoapp
 
 migrateup:
-	migrate -path db/migration -database "postgresql://adityaladwa:secret@localhost:5432/todoapp?sslmode=disable" -verbose up
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/todoapp?sslmode=disable" -verbose up
 
 test:
 	go test -v -cover ./...
